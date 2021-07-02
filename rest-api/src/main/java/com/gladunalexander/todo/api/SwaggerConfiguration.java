@@ -1,4 +1,4 @@
-package com.gladunalexander.todo.web;
+package com.gladunalexander.todo.api;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -18,7 +18,7 @@ class SwaggerConfiguration {
     public GroupedOpenApi api() {
         return GroupedOpenApi.builder()
                              .group("api")
-                             .packagesToScan("com.gladunalexander.todo")
+                             .packagesToScan("com.gladunalexander.todo.api")
                              .pathsToMatch("/**")
                              .build();
     }

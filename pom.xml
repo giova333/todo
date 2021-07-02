@@ -20,8 +20,9 @@
         <module>ports</module>
         <module>application</module>
         <module>persistence</module>
-        <module>web</module>
+        <module>rest-api</module>
         <module>configuration</module>
+        <module>web-mvc</module>
     </modules>
 
     <dependencyManagement>
@@ -51,7 +52,7 @@
             </dependency>
             <dependency>
                 <groupId>com.gladunalexander</groupId>
-                <artifactId>web</artifactId>
+                <artifactId>rest-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -62,6 +63,11 @@
             <dependency>
                 <groupId>com.gladunalexander</groupId>
                 <artifactId>application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gladunalexander</groupId>
+                <artifactId>web-mvc</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

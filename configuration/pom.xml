@@ -14,7 +14,11 @@
     <dependencies>
         <dependency>
             <groupId>com.gladunalexander</groupId>
-            <artifactId>web</artifactId>
+            <artifactId>rest-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.gladunalexander</groupId>
+            <artifactId>web-mvc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.gladunalexander</groupId>
@@ -36,6 +40,7 @@
                     <execution>
                         <goals>
                             <goal>build-info</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>

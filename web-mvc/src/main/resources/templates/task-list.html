@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo</title>
+
+    <link th:href="@{/webjars/bootstrap/5.0.1/css/bootstrap.min.css}" rel="stylesheet" media="screen"/>
+    <link type="text/css" th:href="@{styles.css}" rel="stylesheet" media="screen"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-white">
+                <div class="card-body">
+                    <form id="create-task" th:action="@{/create}" method="post" th:object="${createTaskRequest}">
+                        <input type="text" th:field="*{name}" class="form-control add-task" placeholder="New Task...">
+                        <span style="color: red" th:if="${#fields.hasErrors('name')}">Name cannot be empty</span>
+                    </form>
+                    <ul class="nav nav-pills todo-nav">
+                        <li role="presentation" class="nav-item all-task active"><a href="#" class="nav-link">All</a>
+                        </li>
+                        <li role="presentation" class="nav-item active-task"><a href="#" class="nav-link">Active</a>
+                        </li>
+                        <li role="presentation" class="nav-item completed-task"><a href="#"
+                                                                                   class="nav-link">Completed</a></li>
+                    </ul>
+                    <div class="todo-list">
+                        <div class="todo-item">
+                            <div class="checker"><span class=""><input type="checkbox"></span></div>
+                            <span>Create theme</span>
+                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i
+                                    class="icon-close"></i></a>
+                        </div>
+                        <div class="todo-item">
+                            <div class="checker"><span class=""><input type="checkbox"></span></div>
+                            <span>Work on wordpress</span>
+                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i
+                                    class="icon-close"></i></a>
+                        </div>
+
+                        <div class="todo-item">
+                            <div class="checker"><span class=""><input type="checkbox"></span></div>
+                            <span>Organize office main department</span>
+                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i
+                                    class="icon-close"></i></a>
+                        </div>
+                        <div class="todo-item">
+                            <div class="checker"><span><input type="checkbox"></span></div>
+                            <span>Error solve in HTML template</span>
+                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i
+                                    class="icon-close"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+</body>
+</html>

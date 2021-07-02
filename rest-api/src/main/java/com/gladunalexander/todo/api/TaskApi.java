@@ -1,4 +1,4 @@
-package com.gladunalexander.todo.web;
+package com.gladunalexander.todo.api;
 
 import com.gladunalexander.todo.domain.Task;
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
@@ -22,7 +22,7 @@ import static com.gladunalexander.todo.ports.in.CreateTaskUseCase.CreateTaskComm
 @RestController
 @RequestMapping("/api/task")
 @RequiredArgsConstructor
-public class TaskController {
+public class TaskApi {
 
     private final CreateTaskUseCase createTaskUseCase;
 
