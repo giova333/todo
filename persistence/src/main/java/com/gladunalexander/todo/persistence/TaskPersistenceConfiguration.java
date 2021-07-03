@@ -7,8 +7,14 @@ import org.springframework.context.annotation.Configuration;
 class TaskPersistenceConfiguration {
 
     @Bean
-    TaskPersistenceAdapter taskPersistenceAdapter(TaskJpaRepository jpaRepository) {
-        return new TaskPersistenceAdapter(jpaRepository);
+    TaskConverter taskConverter() {
+        return new TaskConverter();
+    }
+
+    @Bean
+    TaskPersistenceAdapter taskPersistenceAdapter(TaskJpaRepository jpaRepository,
+                                                  TaskConverter taskConverter) {
+        return new TaskPersistenceAdapter(jpaRepository, taskConverter);
     }
 
 }

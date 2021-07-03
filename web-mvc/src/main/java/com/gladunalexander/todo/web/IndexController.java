@@ -1,14 +1,16 @@
 package com.gladunalexander.todo.web;
 
 import com.gladunalexander.todo.web.data.CreateTaskRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class TaskListController {
+@RequiredArgsConstructor
+public class IndexController {
 
     @GetMapping("/")
     public String index(CreateTaskRequest createTaskRequest) {
-        return "task-list";
+        return "index";
     }
 }

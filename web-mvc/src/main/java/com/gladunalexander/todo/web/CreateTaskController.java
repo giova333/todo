@@ -23,7 +23,7 @@ public class CreateTaskController {
     public String createTask(@Valid CreateTaskRequest createTaskRequest,
                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "task-list";
+            return "index";
         }
         log.info("Received createTaskRequest: {}", createTaskRequest);
         createTaskUseCase.create(new CreateTaskCommand(createTaskRequest.getName()));
