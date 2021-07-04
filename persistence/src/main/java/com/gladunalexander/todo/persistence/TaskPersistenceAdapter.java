@@ -1,6 +1,7 @@
 package com.gladunalexander.todo.persistence;
 
 import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
 import com.gladunalexander.todo.ports.out.TaskPersister;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ class TaskPersistenceAdapter implements TaskPersister, TaskFetcher {
     }
 
     @Override
-    public List<Task> getTasks() {
-        return taskJpaRepository.findAll().stream()
+    public List<Task> getTasks(TaskFilter filter) {
+        return taskJpaRepository.findAll(filter).stream()
                                 .map(taskConverter::convert)
                                 .collect(Collectors.toList());
     }

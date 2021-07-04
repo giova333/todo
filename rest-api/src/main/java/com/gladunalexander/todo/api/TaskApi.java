@@ -1,11 +1,13 @@
 package com.gladunalexander.todo.api;
 
 import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
 import com.gladunalexander.todo.ports.in.GetTasksQuery;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
@@ -43,10 +45,16 @@ public class TaskApi {
     @GetMapping
     @Timed(value = "get-tasks", percentiles = 0.99, histogram = true)
     @Counted(value = "get-tasks")
-    public List<TaskResponse> getTasks() {
-        return getTasksQuery.getTasks().stream()
+    public List<TaskResponse> getTasks(GetTasksFilterRequest getTasksFilterRequest) {
+        var taskFilter = TaskFilter.withStatus(getTasksFilterRequest.status);
+        return getTasksQuery.getTasks(taskFilter).stream()
                             .map(TaskResponse::from)
                             .collect(Collectors.toList());
+    }
+
+    @Data
+    static class GetTasksFilterRequest {
+        String status;
     }
 
     @Value

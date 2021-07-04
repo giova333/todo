@@ -18,12 +18,12 @@
                         <span style="color: red" th:if="${#fields.hasErrors('name')}">Name cannot be empty</span>
                     </form>
                     <ul class="nav nav-pills todo-nav">
-                        <li role="presentation" class="nav-item all-task active"><a href="#" class="nav-link">All</a>
+                        <li role="presentation" class="nav-item all-task active"><a href="/" class="nav-link">All</a>
                         </li>
-                        <li role="presentation" class="nav-item active-task"><a href="#" class="nav-link">Active</a>
+                        <li role="presentation" class="nav-item active-task"><a href="?status=ACTIVE" class="nav-link">Active</a>
                         </li>
-                        <li role="presentation" class="nav-item completed-task"><a href="#"
-                                                                                   class="nav-link">Completed</a></li>
+                        <li role="presentation" class="nav-item completed-task"><a href="?status=DONE"
+                                                                                   class="nav-link">Done</a></li>
                     </ul>
                     <div class="todo-list">
                         <div class="todo-item" th:each="task: ${tasks}">

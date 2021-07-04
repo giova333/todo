@@ -14,17 +14,7 @@ public class Task {
     Status status;
 
     public static Task create(String name) {
-        return new Task(TaskId.newId(), name, Status.TODO);
-    }
-
-    public Task todo() {
-        assertIsValidTransition(status, Status.TODO);
-        return withStatus(Status.TODO);
-    }
-
-    public Task inProgress() {
-        assertIsValidTransition(status, Status.IN_PROGRESS);
-        return withStatus(Status.IN_PROGRESS);
+        return new Task(TaskId.newId(), name, Status.ACTIVE);
     }
 
     public Task done() {
