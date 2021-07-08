@@ -17,14 +17,9 @@ public class Task {
         return new Task(TaskId.newId(), name, Status.ACTIVE);
     }
 
-    public Task done() {
-        assertIsValidTransition(status, Status.DONE);
-        return withStatus(Status.DONE);
-    }
-
-    public Task cancelled() {
-        assertIsValidTransition(status, Status.CANCELED);
-        return withStatus(Status.CANCELED);
+    public Task updateStatus(Status newStatus) {
+        assertIsValidTransition(status, newStatus);
+        return withStatus(newStatus);
     }
 
     private void assertIsValidTransition(Status from, Status to) {

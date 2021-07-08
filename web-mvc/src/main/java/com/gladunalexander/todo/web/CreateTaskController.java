@@ -15,7 +15,7 @@ import static com.gladunalexander.todo.ports.in.CreateTaskUseCase.CreateTaskComm
 @Controller
 @Log4j2
 @RequiredArgsConstructor
-public class CreateTaskController {
+class CreateTaskController {
 
     private final CreateTaskUseCase createTaskUseCase;
 

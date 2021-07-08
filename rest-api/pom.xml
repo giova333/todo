@@ -37,6 +37,10 @@
             <groupId>com.gladunalexander</groupId>
             <artifactId>ports</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.gladunalexander</groupId>
+            <artifactId>application</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

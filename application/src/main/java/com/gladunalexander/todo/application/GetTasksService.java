@@ -8,13 +8,18 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
+
 @RequiredArgsConstructor
-public class GetTasksService implements GetTasksQuery {
+class GetTasksService implements GetTasksQuery {
 
     private final TaskFetcher taskFetcher;
 
     @Override
     public List<Task> getTasks(TaskFilter taskFilter) {
-        return taskFetcher.getTasks(taskFilter);
+        return taskFetcher.getTasks(taskFilter).stream()
+                          .sorted(comparing(task -> task.getStatus().getOrder()))
+                          .collect(toList());
     }
 }

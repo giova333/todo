@@ -7,7 +7,10 @@ import com.gladunalexander.todo.ports.out.TaskPersister;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.gladunalexander.todo.domain.Task.TaskId;
 
 @RequiredArgsConstructor
 class TaskPersistenceAdapter implements TaskPersister, TaskFetcher {
@@ -27,5 +30,11 @@ class TaskPersistenceAdapter implements TaskPersister, TaskFetcher {
         return taskJpaRepository.findAll(filter).stream()
                                 .map(taskConverter::convert)
                                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Task> findById(TaskId taskId) {
+        return taskJpaRepository.findById(taskId.getUuid().toString())
+                                .map(taskConverter::convert);
     }
 }

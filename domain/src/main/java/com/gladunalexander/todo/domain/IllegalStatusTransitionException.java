@@ -1,14 +1,14 @@
 package com.gladunalexander.todo.domain;
 
-import lombok.Value;
+import lombok.Getter;
 
-@Value
+@Getter
 public class IllegalStatusTransitionException extends RuntimeException {
 
     private static final String MESSAGE = "Illegal status transition from: %s to: %s";
 
-    Status from;
-    Status to;
+    private final Status from;
+    private final Status to;
 
     public IllegalStatusTransitionException(Status from, Status to) {
         super(String.format(MESSAGE, from, to));

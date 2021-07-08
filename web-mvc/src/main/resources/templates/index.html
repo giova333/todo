@@ -27,10 +27,18 @@
                     </ul>
                     <div class="todo-list">
                         <div class="todo-item" th:each="task: ${tasks}">
-                            <div class="checker"><span class=""><input type="checkbox"></span></div>
-                            <span th:text="${task.name}"/>
+                            <form th:id="'change-status' + ${taskStat.index}" method="post" action="/change-status">
+                            <div class="checker" th:if="${task.status == 'ACTIVE'}">
+                                <span class="">
+                                    <input th:id="'checkBoxStatus' + ${taskStat.index}" type="checkbox" name='status' th:onchange="'javascript:submitStatus(\'' + ${taskStat.index} + '\');'">
+                                </span>
+                            </div>
+                            <span th:text="${task.name}" th:if="${task.status == 'ACTIVE'}"/>
+                            <del th:text="${task.name}"  th:if="${task.status == 'DONE'}"/>
                             <a href="javascript:void(0);" class="float-right remove-todo-item"><i
                                     class="icon-close"></i></a>
+                                <input type="hidden" name="taskId" th:value="${task.id}">
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -40,5 +48,6 @@
 </div>
 <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/5.0.1/js/bootstrap.min.js}"></script>
+<script th:src="@{main.js}"></script>
 </body>
 </html>
