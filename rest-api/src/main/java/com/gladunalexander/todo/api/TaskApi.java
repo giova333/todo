@@ -18,10 +18,12 @@ import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -47,20 +49,23 @@ public class TaskApi {
     @PostMapping
     @Timed(value = "create-task", percentiles = 0.99, histogram = true)
     @Counted(value = "create-task")
+    @ResponseStatus(HttpStatus.CREATED)
     public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest createTaskRequest) {
         log.debug("createTaskRequest {}", createTaskRequest);
         var task = createTaskUseCase.create(new CreateTaskCommand(createTaskRequest.getName()));
         return TaskResponse.from(task);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Timed(value = "update-task-status", percentiles = 0.99, histogram = true)
     @Counted(value = "update-task-status")
-    public void updateTaskStatus(@Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateTaskStatus(@Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest,
+                                 @PathVariable String id) {
         log.debug("updateTaskStatusRequest {}", updateTaskStatusRequest);
         try {
             updateTaskStatusUseCase.updateStatus(UpdateStatusCommand.builder()
-                                                                    .taskId(TaskId.of(UUID.fromString(updateTaskStatusRequest.taskId)))
+                                                                    .taskId(TaskId.of(UUID.fromString(id)))
                                                                     .status(Status.valueOf(updateTaskStatusRequest.status))
                                                                     .build());
         } catch (IllegalStatusTransitionException e) {
@@ -113,8 +118,6 @@ public class TaskApi {
     @Value
     @Builder
     static class UpdateTaskStatusRequest {
-        @NotBlank
-        String taskId;
         @NotBlank
         String status;
     }
