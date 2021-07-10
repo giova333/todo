@@ -3,7 +3,7 @@ package com.gladunalexander.todo.persistence;
 import com.gladunalexander.todo.domain.Task;
 import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
-import com.gladunalexander.todo.ports.out.TaskPersister;
+import com.gladunalexander.todo.ports.out.TaskWriteOperations;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static com.gladunalexander.todo.domain.Task.TaskId;
 
 @RequiredArgsConstructor
-class TaskPersistenceAdapter implements TaskPersister, TaskFetcher {
+class TaskPersistenceAdapter implements TaskWriteOperations, TaskFetcher {
 
     private final TaskJpaRepository taskJpaRepository;
     private final TaskConverter taskConverter;
@@ -23,6 +23,13 @@ class TaskPersistenceAdapter implements TaskPersister, TaskFetcher {
         var taskJpaEntity = taskConverter.convert(task);
         taskJpaRepository.save(taskJpaEntity);
         return task;
+    }
+
+    @Override
+    public void delete(Task task) {
+        var taskJpaEntity = taskConverter.convert(task);
+        taskJpaEntity.setDeleted(true);
+        taskJpaRepository.save(taskJpaEntity);
     }
 
     @Override

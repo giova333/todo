@@ -4,7 +4,7 @@ import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
 import com.gladunalexander.todo.ports.in.GetTasksQuery;
 import com.gladunalexander.todo.ports.in.UpdateTaskStatusUseCase;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
-import com.gladunalexander.todo.ports.out.TaskPersister;
+import com.gladunalexander.todo.ports.out.TaskWriteOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 class TaskServiceFactory {
 
     @Bean
-    CreateTaskUseCase createTaskUseCase(TaskPersister taskPersister) {
-        return new CreateTaskService(taskPersister);
+    CreateTaskUseCase createTaskUseCase(TaskWriteOperations taskWriteOperations) {
+        return new CreateTaskService(taskWriteOperations);
     }
 
     @Bean
@@ -22,8 +22,14 @@ class TaskServiceFactory {
     }
 
     @Bean
-    UpdateTaskStatusUseCase updateTaskStatusUseCase(TaskPersister taskPersister,
+    UpdateTaskStatusUseCase updateTaskStatusUseCase(TaskWriteOperations taskWriteOperations,
                                                     TaskFetcher taskFetcher) {
-        return new UpdateTaskStatusService(taskPersister, taskFetcher);
+        return new UpdateTaskStatusService(taskWriteOperations, taskFetcher);
+    }
+
+    @Bean
+    DeleteTaskService deleteTaskService(TaskFetcher taskFetcher,
+                                        TaskWriteOperations taskWriteOperations) {
+        return new DeleteTaskService(taskFetcher, taskWriteOperations);
     }
 }

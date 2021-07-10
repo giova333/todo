@@ -12,7 +12,16 @@ interface TaskJpaRepository extends JpaRepository<TaskJpaEntity, String>,
         JpaSpecificationExecutor<TaskJpaEntity> {
 
     default List<TaskJpaEntity> findAll(TaskFilter taskFilter) {
-        return findAll(withStatus(taskFilter.getStatus()));
+        return findAll(
+                withStatus(taskFilter.getStatus())
+                        .and(
+                                notDeleted()
+                        ));
+    }
+
+    private Specification<TaskJpaEntity> notDeleted() {
+        return (root, query, cb) ->
+                cb.equal(cb.coalesce(root.get("deleted"), false), false);
     }
 
     private Specification<TaskJpaEntity> withStatus(Status status) {

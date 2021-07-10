@@ -9,6 +9,7 @@ workspace "Todo" "Workspace for Todo application" {
 
                 createTaskUseCase = component "CreateTaskUseCase" "Creates tasks" "Spring Bean"
                 updateTaskUseCase = component "UpdateTaskStatusUseCase" "Updates task statuses" "Spring Bean"
+                deleteTaskUseCase = component "DeleteTaskUseCase" "Deletes tasks" "Spring Bean"
                 getTasksQuery = component "GetTasksQuery" "Retrieves tasks" "Spring Bean"
             }
             database = container "Database" "Stores task information" "MySql" "Database"
@@ -23,6 +24,7 @@ workspace "Todo" "Workspace for Todo application" {
             taskApi -> createTaskUseCase "Uses"
             taskApi -> updateTaskUseCase "Uses"
             taskApi -> getTasksQuery "Uses"
+            taskApi -> deleteTaskUseCase "Uses"
             taskController -> createTaskUseCase "Uses"
             taskController -> updateTaskUseCase "Uses"
             taskController -> getTasksQuery "Uses"
