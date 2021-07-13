@@ -1,8 +1,7 @@
 package com.gladunalexander.todo.application;
 
+import com.gladunalexander.todo.domain.TaskId;
 import lombok.Getter;
-
-import static com.gladunalexander.todo.domain.Task.TaskId;
 
 public class TaskNotFoundException extends RuntimeException {
 

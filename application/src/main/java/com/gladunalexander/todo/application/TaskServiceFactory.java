@@ -2,7 +2,6 @@ package com.gladunalexander.todo.application;
 
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
 import com.gladunalexander.todo.ports.in.GetTasksQuery;
-import com.gladunalexander.todo.ports.in.UpdateTaskStatusUseCase;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
 import com.gladunalexander.todo.ports.out.TaskWriteOperations;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +21,9 @@ class TaskServiceFactory {
     }
 
     @Bean
-    UpdateTaskStatusUseCase updateTaskStatusUseCase(TaskWriteOperations taskWriteOperations,
-                                                    TaskFetcher taskFetcher) {
-        return new UpdateTaskStatusService(taskWriteOperations, taskFetcher);
+    CompleteTaskService completeTaskService(TaskWriteOperations taskWriteOperations,
+                                            TaskFetcher taskFetcher) {
+        return new CompleteTaskService(taskFetcher, taskWriteOperations);
     }
 
     @Bean

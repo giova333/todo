@@ -1,8 +1,7 @@
 package com.gladunalexander.todo.ports.in;
 
+import com.gladunalexander.todo.domain.TaskId;
 import lombok.Value;
-
-import static com.gladunalexander.todo.domain.Task.TaskId;
 
 public interface DeleteTaskUseCase {
 

@@ -8,7 +8,7 @@ workspace "Todo" "Workspace for Todo application" {
                 taskController = component "TaskController" "Provides static content" "Spring MVC Controller" "TaskController"
 
                 createTaskUseCase = component "CreateTaskUseCase" "Creates tasks" "Spring Bean"
-                updateTaskUseCase = component "UpdateTaskStatusUseCase" "Updates task statuses" "Spring Bean"
+                completeTaskUseCase = component "CompleteTaskUseCase" "Completes task" "Spring Bean"
                 deleteTaskUseCase = component "DeleteTaskUseCase" "Deletes tasks" "Spring Bean"
                 getTasksQuery = component "GetTasksQuery" "Retrieves tasks" "Spring Bean"
             }
@@ -22,14 +22,14 @@ workspace "Todo" "Workspace for Todo application" {
 
             # relationships to/from components
             taskApi -> createTaskUseCase "Uses"
-            taskApi -> updateTaskUseCase "Uses"
+            taskApi -> completeTaskUseCase "Uses"
             taskApi -> getTasksQuery "Uses"
             taskApi -> deleteTaskUseCase "Uses"
             taskController -> createTaskUseCase "Uses"
-            taskController -> updateTaskUseCase "Uses"
+            taskController -> completeTaskUseCase "Uses"
             taskController -> getTasksQuery "Uses"
             createTaskUseCase -> database
-            updateTaskUseCase -> database
+            completeTaskUseCase -> database
             getTasksQuery -> database
         }
     }

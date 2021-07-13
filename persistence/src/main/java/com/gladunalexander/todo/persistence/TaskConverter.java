@@ -1,23 +1,47 @@
 package com.gladunalexander.todo.persistence;
 
-import com.gladunalexander.todo.domain.Status;
+import com.gladunalexander.todo.domain.ActiveTask;
+import com.gladunalexander.todo.domain.DoneTask;
 import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.TaskId;
 
-import java.util.UUID;
+import static com.gladunalexander.todo.persistence.TaskJpaEntity.Status.ACTIVE;
+import static com.gladunalexander.todo.persistence.TaskJpaEntity.Status.DONE;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.instanceOf;
 
-public class TaskConverter {
+class TaskConverter {
 
-    public TaskJpaEntity convert(Task task) {
+    TaskJpaEntity convert(Task task) {
+        var status = Match(task).of(
+                Case($(instanceOf(ActiveTask.class)), ACTIVE),
+                Case($(instanceOf(DoneTask.class)), DONE)
+        );
         return TaskJpaEntity.builder()
-                            .id(task.getTaskId().getUuid().toString())
+                            .id(task.getId().getUuid().toString())
                             .name(task.getName())
-                            .status(task.getStatus().name())
+                            .status(status)
                             .build();
     }
 
-    public Task convert(TaskJpaEntity entity) {
-        return new Task(Task.TaskId.of(UUID.fromString(entity.getId())),
-                        entity.getName(),
-                        Status.valueOf(entity.getStatus()));
+    Task convert(TaskJpaEntity entity) {
+        return Match(entity.getStatus()).of(
+                Case($(ACTIVE), () -> toActiveTask(entity)),
+                Case($(DONE), () -> toDoneTask(entity))
+        );
+    }
+
+    private DoneTask toDoneTask(TaskJpaEntity entity) {
+        return new DoneTask(TaskId.fromString(entity.getId()),
+                            entity.getName()
+        );
+    }
+
+    private ActiveTask toActiveTask(TaskJpaEntity entity) {
+        return new ActiveTask(TaskId.fromString(entity.getId()),
+                              entity.getName()
+        );
     }
 }

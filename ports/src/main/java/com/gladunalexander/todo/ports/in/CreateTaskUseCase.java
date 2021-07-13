@@ -1,11 +1,11 @@
 package com.gladunalexander.todo.ports.in;
 
-import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.ActiveTask;
 import lombok.Value;
 
 public interface CreateTaskUseCase {
 
-    Task create(CreateTaskCommand command);
+    ActiveTask create(CreateTaskCommand command);
 
     @Value
     class CreateTaskCommand {

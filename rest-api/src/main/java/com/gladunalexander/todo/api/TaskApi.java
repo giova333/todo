@@ -2,14 +2,13 @@ package com.gladunalexander.todo.api;
 
 import com.gladunalexander.todo.application.DeleteTaskService;
 import com.gladunalexander.todo.application.TaskNotFoundException;
-import com.gladunalexander.todo.domain.IllegalStatusTransitionException;
-import com.gladunalexander.todo.domain.Status;
+import com.gladunalexander.todo.domain.ActiveTask;
+import com.gladunalexander.todo.domain.DoneTask;
 import com.gladunalexander.todo.domain.Task;
-import com.gladunalexander.todo.domain.Task.TaskId;
-import com.gladunalexander.todo.domain.TaskFilter;
+import com.gladunalexander.todo.domain.TaskId;
+import com.gladunalexander.todo.ports.in.CompleteTaskUseCase;
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
 import com.gladunalexander.todo.ports.in.GetTasksQuery;
-import com.gladunalexander.todo.ports.in.UpdateTaskStatusUseCase;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import lombok.Builder;
@@ -31,32 +30,42 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.gladunalexander.todo.api.TaskApi.Status.ACTIVE;
+import static com.gladunalexander.todo.api.TaskApi.Status.DONE;
 import static com.gladunalexander.todo.ports.in.CreateTaskUseCase.CreateTaskCommand;
 import static com.gladunalexander.todo.ports.in.DeleteTaskUseCase.DeleteTaskCommand;
-import static com.gladunalexander.todo.ports.in.UpdateTaskStatusUseCase.UpdateStatusCommand;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.instanceOf;
+import static io.vavr.Predicates.isNull;
 
 @Log4j2
 @RestController
 @RequestMapping("/api/task")
 @RequiredArgsConstructor
-public class TaskApi {
+class TaskApi {
 
     private final CreateTaskUseCase createTaskUseCase;
-    private final UpdateTaskStatusUseCase updateTaskStatusUseCase;
+    private final CompleteTaskUseCase completeTaskUseCase;
     private final DeleteTaskService deleteTaskService;
     private final GetTasksQuery getTasksQuery;
 
     @GetMapping
     @Timed(value = "get-tasks", percentiles = 0.99, histogram = true)
     @Counted(value = "get-tasks")
-    public List<TaskResponse> getTasks(GetTasksFilterRequest getTasksFilterRequest) {
-        return getTasksQuery.getTasks(getTasksFilterRequest.toTaskFilter()).stream()
-                            .map(TaskResponse::from)
-                            .collect(Collectors.toList());
+    public List<TaskResponse> getTasks(GetTasksFilterRequest filterRequest) {
+        return Match(filterRequest.status).of(
+                Case($(isNull()), getTasksQuery::getTasks),
+                Case($(ACTIVE), getTasksQuery::getActiveTasks),
+                Case($(DONE), getTasksQuery::getDoneTasks))
+                                          .stream()
+                                          .map(TaskResponse::from)
+                                          .collect(Collectors.toList());
     }
 
     @PostMapping
@@ -73,16 +82,15 @@ public class TaskApi {
     @Timed(value = "update-task-status", percentiles = 0.99, histogram = true)
     @Counted(value = "update-task-status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateTaskStatus(@Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest,
-                                 @PathVariable String id) {
-        log.debug("updateTaskStatusRequest {}", updateTaskStatusRequest);
+    public void completeTask(@PathVariable String id,
+                             @Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest) {
         try {
-            updateTaskStatusUseCase.updateStatus(UpdateStatusCommand.builder()
-                                                                    .taskId(TaskId.of(UUID.fromString(id)))
-                                                                    .status(Status.valueOf(updateTaskStatusRequest.status))
-                                                                    .build());
-        } catch (IllegalStatusTransitionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            Match(updateTaskStatusRequest.getStatus()).of(
+                    Case($(DONE), () -> completeTaskUseCase.complete(TaskId.fromString(id))),
+                    Case($(), () -> {
+                             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                         }
+                    ));
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -94,7 +102,7 @@ public class TaskApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         try {
-            deleteTaskService.deleteTask(new DeleteTaskCommand(TaskId.of(UUID.fromString(id))));
+            deleteTaskService.deleteTask(new DeleteTaskCommand(TaskId.fromString(id)));
         } catch (TaskNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -102,25 +110,27 @@ public class TaskApi {
 
     @Data
     static class GetTasksFilterRequest {
-        String status;
+        Status status;
+    }
 
-        TaskFilter toTaskFilter() {
-            return status == null
-                    ? TaskFilter.empty()
-                    : TaskFilter.withStatus(status);
-        }
+    enum Status {
+        ACTIVE, DONE
     }
 
     @Value
     static class TaskResponse {
         String id;
         String name;
-        String status;
+        Status status;
 
         static TaskResponse from(Task task) {
-            return new TaskResponse(task.getTaskId().getUuid().toString(),
+            var status = Match(task).of(
+                    Case($(instanceOf(ActiveTask.class)), ACTIVE),
+                    Case($(instanceOf(DoneTask.class)), DONE)
+            );
+            return new TaskResponse(task.getId().getUuid().toString(),
                                     task.getName(),
-                                    task.getStatus().name());
+                                    status);
         }
     }
 
@@ -134,7 +144,7 @@ public class TaskApi {
     @Value
     @Builder
     static class UpdateTaskStatusRequest {
-        @NotBlank
-        String status;
+        @NotNull
+        Status status;
     }
 }

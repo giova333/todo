@@ -27,14 +27,14 @@
                     </ul>
                     <div class="todo-list">
                         <div class="todo-item" th:each="task: ${tasks}">
-                            <form th:id="'change-status' + ${taskStat.index}" method="post" action="/change-status">
-                            <div class="checker" th:if="${task.status == 'ACTIVE'}">
+                            <form th:id="'change-status' + ${taskStat.index}" method="post" action="/complete">
+                            <div class="checker" th:if="${task.status == T(com.gladunalexander.todo.web.data.Status).ACTIVE}">
                                 <span class="">
                                     <input th:id="'checkBoxStatus' + ${taskStat.index}" type="checkbox" name='status' th:onchange="'javascript:submitStatus(\'' + ${taskStat.index} + '\');'">
                                 </span>
                             </div>
-                            <span th:text="${task.name}" th:if="${task.status == 'ACTIVE'}"/>
-                            <del th:text="${task.name}"  th:if="${task.status == 'DONE'}"/>
+                            <span th:text="${task.name}" th:if="${task.status == T(com.gladunalexander.todo.web.data.Status).ACTIVE}"/>
+                            <del th:text="${task.name}"  th:if="${task.status == T(com.gladunalexander.todo.web.data.Status).DONE}"/>
                             <a href="javascript:void(0);" class="float-right remove-todo-item"><i
                                     class="icon-close"></i></a>
                                 <input type="hidden" name="taskId" th:value="${task.id}">

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,6 +21,11 @@ class TaskJpaEntity {
     @Id
     private String id;
     private String name;
-    private String status;
+    @Enumerated
+    private Status status;
     private Boolean deleted;
+
+    enum Status {
+        ACTIVE, DONE
+    }
 }

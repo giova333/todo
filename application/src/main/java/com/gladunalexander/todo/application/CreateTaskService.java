@@ -1,5 +1,6 @@
 package com.gladunalexander.todo.application;
 
+import com.gladunalexander.todo.domain.ActiveTask;
 import com.gladunalexander.todo.domain.Task;
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
 import com.gladunalexander.todo.ports.out.TaskWriteOperations;
@@ -13,9 +14,9 @@ class CreateTaskService implements CreateTaskUseCase {
     private final TaskWriteOperations taskWriteOperations;
 
     @Override
-    public Task create(CreateTaskCommand command) {
+    public ActiveTask create(CreateTaskCommand command) {
         log.info("Creating task {}", command);
-        var newTask = Task.create(command.getName());
-        return taskWriteOperations.save(newTask);
+        var newTask = Task.newTask(command.getName());
+        return taskWriteOperations.create(newTask);
     }
 }
