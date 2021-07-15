@@ -20,6 +20,6 @@ class UpdateTaskStatusService implements UpdateTaskStatusUseCase {
                               .orElseThrow(() -> new TaskNotFoundException(command.getTaskId()));
 
         var taskWithUpdatedStatus = task.updateStatus(command.getStatus());
-        taskWriteOperations.save(taskWithUpdatedStatus);
+        taskWriteOperations.save(taskWithUpdatedStatus.getAggregate());
     }
 }

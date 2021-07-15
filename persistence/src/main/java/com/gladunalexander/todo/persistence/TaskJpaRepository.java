@@ -5,11 +5,18 @@ import com.gladunalexander.todo.domain.TaskFilter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 interface TaskJpaRepository extends JpaRepository<TaskJpaEntity, String>,
         JpaSpecificationExecutor<TaskJpaEntity> {
+
+    @Override
+    @Query("select t from TaskJpaEntity t where t.id =:id and (t.deleted = false or t.deleted is null)")
+    Optional<TaskJpaEntity> findById(@Param("id") String id);
 
     default List<TaskJpaEntity> findAll(TaskFilter taskFilter) {
         return findAll(

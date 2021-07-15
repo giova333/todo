@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.gladunalexander.todo.domain.Task.TaskId;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
@@ -21,5 +22,11 @@ class GetTasksService implements GetTasksQuery {
         return taskFetcher.getTasks(taskFilter).stream()
                           .sorted(comparing(task -> task.getStatus().getOrder()))
                           .collect(toList());
+    }
+
+    @Override
+    public Task getTask(TaskId taskId) {
+        return taskFetcher.findById(taskId)
+                          .orElseThrow(() -> new TaskNotFoundException(taskId));
     }
 }

@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RequiredArgsConstructor
-public class DeleteTaskService implements DeleteTaskUseCase {
+class DeleteTaskService implements DeleteTaskUseCase {
 
     private final TaskFetcher taskFetcher;
     private final TaskWriteOperations taskWriteOperations;
@@ -18,6 +18,7 @@ public class DeleteTaskService implements DeleteTaskUseCase {
         log.info("Deleting task: {}", command);
         var task = taskFetcher.findById(command.getTaskId())
                               .orElseThrow(() -> new TaskNotFoundException(command.getTaskId()));
-        taskWriteOperations.delete(task);
+        var deletedTask = task.delete();
+        taskWriteOperations.delete(deletedTask.getAggregate());
     }
 }

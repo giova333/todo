@@ -5,6 +5,7 @@ import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
 import com.gladunalexander.todo.ports.out.TaskWriteOperations;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import static com.gladunalexander.todo.domain.Task.TaskId;
 
 @RequiredArgsConstructor
+@Transactional
 class TaskPersistenceAdapter implements TaskWriteOperations, TaskFetcher {
 
     private final TaskJpaRepository taskJpaRepository;

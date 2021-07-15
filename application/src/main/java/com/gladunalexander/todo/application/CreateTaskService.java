@@ -16,6 +16,6 @@ class CreateTaskService implements CreateTaskUseCase {
     public Task create(CreateTaskCommand command) {
         log.info("Creating task {}", command);
         var newTask = Task.create(command.getName());
-        return taskWriteOperations.save(newTask);
+        return taskWriteOperations.save(newTask.getAggregate());
     }
 }
