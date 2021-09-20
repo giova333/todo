@@ -1,8 +1,8 @@
 package com.gladunalexander.todo.persistence;
 
 import com.gladunalexander.todo.domain.ActiveTask;
-import com.gladunalexander.todo.domain.DoneTask;
 import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.domain.TaskId;
 import com.gladunalexander.todo.ports.out.TaskFetcher;
 import com.gladunalexander.todo.ports.out.TaskWriteOperations;
@@ -11,9 +11,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.gladunalexander.todo.persistence.TaskJpaEntity.Status.ACTIVE;
-import static com.gladunalexander.todo.persistence.TaskJpaEntity.Status.DONE;
 
 @RequiredArgsConstructor
 class TaskPersistenceAdapter implements TaskWriteOperations, TaskFetcher {
@@ -40,27 +37,9 @@ class TaskPersistenceAdapter implements TaskWriteOperations, TaskFetcher {
     }
 
     @Override
-    public List<Task> getTasks() {
-        return taskJpaRepository.findAll().stream()
+    public List<Task> getTasks(TaskFilter taskFilter) {
+        return taskJpaRepository.findAll(TaskJpaEntity.Status.from(taskFilter.getStatus())).stream()
                                 .map(taskConverter::convert)
-                                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ActiveTask> getActiveTasks() {
-        return taskJpaRepository.findAll(ACTIVE)
-                                .stream()
-                                .map(taskConverter::convert)
-                                .map(ActiveTask.class::cast)
-                                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DoneTask> getDoneTasks() {
-        return taskJpaRepository.findAll(DONE)
-                                .stream()
-                                .map(taskConverter::convert)
-                                .map(DoneTask.class::cast)
                                 .collect(Collectors.toList());
     }
 

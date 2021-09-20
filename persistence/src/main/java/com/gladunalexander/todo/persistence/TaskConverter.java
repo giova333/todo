@@ -10,19 +10,14 @@ import static com.gladunalexander.todo.persistence.TaskJpaEntity.Status.DONE;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
-import static io.vavr.Predicates.instanceOf;
 
 class TaskConverter {
 
     TaskJpaEntity convert(Task task) {
-        var status = Match(task).of(
-                Case($(instanceOf(ActiveTask.class)), ACTIVE),
-                Case($(instanceOf(DoneTask.class)), DONE)
-        );
         return TaskJpaEntity.builder()
                             .id(task.getId().getUuid().toString())
                             .name(task.getName())
-                            .status(status)
+                            .status(TaskJpaEntity.Status.valueOf(task.getStatus()))
                             .build();
     }
 

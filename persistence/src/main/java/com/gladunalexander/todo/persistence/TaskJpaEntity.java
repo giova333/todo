@@ -26,6 +26,11 @@ class TaskJpaEntity {
     private Boolean deleted;
 
     enum Status {
-        ACTIVE, DONE
+        ACTIVE, DONE;
+
+        public static Status from(String status) {
+            if (status == null) return null;
+            return Status.valueOf(status);
+        }
     }
 }

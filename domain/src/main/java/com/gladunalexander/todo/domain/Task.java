@@ -6,6 +6,8 @@ public interface Task {
 
     String getName();
 
+    String getStatus();
+
     static ActiveTask newTask(String name) {
         return new ActiveTask(TaskId.newId(), name);
     }

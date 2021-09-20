@@ -1,10 +1,10 @@
 package com.gladunalexander.todo.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gladunalexander.todo.application.DeleteTaskService;
 import com.gladunalexander.todo.application.TaskNotFoundException;
-import com.gladunalexander.todo.domain.ActiveTask;
-import com.gladunalexander.todo.domain.DoneTask;
 import com.gladunalexander.todo.domain.Task;
+import com.gladunalexander.todo.domain.TaskFilter;
 import com.gladunalexander.todo.domain.TaskId;
 import com.gladunalexander.todo.ports.in.CompleteTaskUseCase;
 import com.gladunalexander.todo.ports.in.CreateTaskUseCase;
@@ -34,15 +34,12 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.gladunalexander.todo.api.TaskApi.Status.ACTIVE;
 import static com.gladunalexander.todo.api.TaskApi.Status.DONE;
 import static com.gladunalexander.todo.ports.in.CreateTaskUseCase.CreateTaskCommand;
 import static com.gladunalexander.todo.ports.in.DeleteTaskUseCase.DeleteTaskCommand;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
-import static io.vavr.Predicates.instanceOf;
-import static io.vavr.Predicates.isNull;
 
 @Log4j2
 @RestController
@@ -59,13 +56,10 @@ class TaskApi {
     @Timed(value = "get-tasks", percentiles = 0.99, histogram = true)
     @Counted(value = "get-tasks")
     public List<TaskResponse> getTasks(GetTasksFilterRequest filterRequest) {
-        return Match(filterRequest.status).of(
-                Case($(isNull()), getTasksQuery::getTasks),
-                Case($(ACTIVE), getTasksQuery::getActiveTasks),
-                Case($(DONE), getTasksQuery::getDoneTasks))
-                                          .stream()
-                                          .map(TaskResponse::from)
-                                          .collect(Collectors.toList());
+        return getTasksQuery.getTasks(new TaskFilter(filterRequest.getStatusAsString()))
+                            .stream()
+                            .map(TaskResponse::from)
+                            .collect(Collectors.toList());
     }
 
     @PostMapping
@@ -82,7 +76,7 @@ class TaskApi {
     @Timed(value = "update-task-status", percentiles = 0.99, histogram = true)
     @Counted(value = "update-task-status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void completeTask(@PathVariable String id,
+    public void updateStatus(@PathVariable String id,
                              @Valid @RequestBody UpdateTaskStatusRequest updateTaskStatusRequest) {
         try {
             Match(updateTaskStatusRequest.getStatus()).of(
@@ -111,6 +105,13 @@ class TaskApi {
     @Data
     static class GetTasksFilterRequest {
         Status status;
+
+        @JsonIgnore
+        public String getStatusAsString() {
+            return status != null
+                    ? status.name()
+                    : null;
+        }
     }
 
     enum Status {
@@ -124,13 +125,9 @@ class TaskApi {
         Status status;
 
         static TaskResponse from(Task task) {
-            var status = Match(task).of(
-                    Case($(instanceOf(ActiveTask.class)), ACTIVE),
-                    Case($(instanceOf(DoneTask.class)), DONE)
-            );
             return new TaskResponse(task.getId().getUuid().toString(),
                                     task.getName(),
-                                    status);
+                                    Status.valueOf(task.getStatus()));
         }
     }
 
